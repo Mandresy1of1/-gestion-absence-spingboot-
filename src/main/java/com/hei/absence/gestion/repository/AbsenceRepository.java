@@ -6,9 +6,10 @@ import java.util.List;
 
 public interface AbsenceRepository {
     List<Absence> findAll();
-    List<Absence> findAllByEtudiant(String etudiantId);
     void insert(Absence absence);
-    Absence findById(Long id);
     void update(Absence absence);
     void delete(Long id);
+    List<Absence> findByCoursId(Long coursId);
+    Absence findById(Long id);
+    List<Absence> findAllByEtudiant(String etudiantId);
 }

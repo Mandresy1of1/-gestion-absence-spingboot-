@@ -1,15 +1,23 @@
 package com.hei.absence.gestion.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Absence {
-    private Long id; // ID unique de l'absence
-    private String etudiantId; // ID de l'étudiant
-    private Date dateAbsence; // Date de l'absence
-    private String motif; // Motif de l'absence
-    private boolean justifiee; // Statut de justification
+    private Long id;
+    private String etudiantId;
+    private LocalDate dateAbsence;
+    private String motif;
+    private boolean justifiee;
+    private Long coursId; // Ajout de coursId
 
-    // Getters et Setters
+    public Absence(Long id, String etudiantId, LocalDate dateAbsence, String motif, boolean justifiee, Long coursId) {
+        this.id = id;
+        this.etudiantId = etudiantId;
+        this.dateAbsence = dateAbsence;
+        this.motif = motif;
+        this.justifiee = justifiee;
+        this.coursId = coursId;
+    }
 
     public Long getId() {
         return id;
@@ -27,11 +35,11 @@ public class Absence {
         this.etudiantId = etudiantId;
     }
 
-    public Date getDateAbsence() {
+    public LocalDate getDateAbsence() {
         return dateAbsence;
     }
 
-    public void setDateAbsence(Date dateAbsence) {
+    public void setDateAbsence(LocalDate dateAbsence) {
         this.dateAbsence = dateAbsence;
     }
 
@@ -49,5 +57,13 @@ public class Absence {
 
     public void setJustifiee(boolean justifiee) {
         this.justifiee = justifiee;
+    }
+
+    public Long getCoursId() {
+        return coursId;
+    }
+
+    public void setCoursId(Long coursId) {
+        this.coursId = coursId;
     }
 }
