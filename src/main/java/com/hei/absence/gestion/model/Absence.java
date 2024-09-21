@@ -1,39 +1,53 @@
 package com.hei.absence.gestion.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public class Absence {
-    private Long id;
-    private Long etudiantId;
-    private Long coursId;
-    private LocalDate dateAbsence;
-    private boolean estJustifiee;
+    private Long id; // ID unique de l'absence
+    private String etudiantId; // ID de l'étudiant
+    private Date dateAbsence; // Date de l'absence
+    private String motif; // Motif de l'absence
+    private boolean justifiee; // Statut de justification
 
-    // Constructeur avec paramètres
-    public Absence(Long id, Long etudiantId, Long coursId, LocalDate dateAbsence, boolean estJustifiee) {
-        this.id = id;
-        this.etudiantId = etudiantId;
-        this.coursId = coursId;
-        this.dateAbsence = dateAbsence;
-        this.estJustifiee = estJustifiee;
+    // Getters et Setters
+
+    public Long getId() {
+        return id;
     }
 
-    // Constructeur par défaut
-    public Absence() {}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    // Getters et setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getEtudiantId() {
+        return etudiantId;
+    }
 
-    public Long getEtudiantId() { return etudiantId; }
-    public void setEtudiantId(Long etudiantId) { this.etudiantId = etudiantId; }
+    public void setEtudiantId(String etudiantId) {
+        this.etudiantId = etudiantId;
+    }
 
-    public Long getCoursId() { return coursId; }
-    public void setCoursId(Long coursId) { this.coursId = coursId; }
+    public Date getDateAbsence() {
+        return dateAbsence;
+    }
 
-    public LocalDate getDateAbsence() { return dateAbsence; }
-    public void setDateAbsence(LocalDate dateAbsence) { this.dateAbsence = dateAbsence; }
+    public void setDateAbsence(Date dateAbsence) {
+        this.dateAbsence = dateAbsence;
+    }
 
-    public boolean isEstJustifiee() { return estJustifiee; }
-    public void setEstJustifiee(boolean estJustifiee) { this.estJustifiee = estJustifiee; }
+    public String getMotif() {
+        return motif;
+    }
+
+    public void setMotif(String motif) {
+        this.motif = motif;
+    }
+
+    public boolean isJustifiee() {
+        return justifiee;
+    }
+
+    public void setJustifiee(boolean justifiee) {
+        this.justifiee = justifiee;
+    }
 }

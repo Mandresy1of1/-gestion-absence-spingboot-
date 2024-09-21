@@ -7,7 +7,7 @@ import java.util.List;
 public interface EtudiantRepository {
     List<Etudiant> findAll();
     void save(Etudiant etudiant);
-    Etudiant findById(String id); // Changement ici pour String
+    Etudiant findById(String id);
     void update(Etudiant etudiant);
-    void delete(String id); // Changement ici pour String
+    void delete(String id);
 }
