@@ -6,7 +6,7 @@ import java.time.LocalDate;
 @Data
 public class COR {
     private Long id;
-    private Long etudiantId;
+    private String etudiantId;
     private LocalDate dateConvocation;
     private String statut;
 }

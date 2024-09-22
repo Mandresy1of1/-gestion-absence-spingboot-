@@ -10,10 +10,12 @@ import java.util.List;
 @Service
 public class AbsenceService {
     private final AbsenceRepository absenceRepository;
+    private final CORService corService; // Injection de CORService
 
     @Autowired
-    public AbsenceService(AbsenceRepository absenceRepository) {
+    public AbsenceService(AbsenceRepository absenceRepository, CORService corService) {
         this.absenceRepository = absenceRepository;
+        this.corService = corService;
     }
 
     public List<Absence> getAllAbsences() {
@@ -22,6 +24,9 @@ public class AbsenceService {
 
     public void addAbsence(Absence absence) {
         absenceRepository.insert(absence);
+
+        // Vérifier si un COR doit être créé pour l'étudiant après cette absence
+        corService.checkAndCreateCOR(absence.getEtudiantId());
     }
 
     public void updateAbsence(Absence absence) {
@@ -52,6 +57,7 @@ public class AbsenceService {
         return absenceRepository.findAllByEtudiant(etudiantId);
     }
 
+    // Implémentation correcte de la méthode getAbsencesByCours
     public List<Absence> getAbsencesByCours(Long coursId) {
         return absenceRepository.findByCoursId(coursId);
     }
@@ -59,5 +65,4 @@ public class AbsenceService {
     public boolean existsById(Long id) {
         return absenceRepository.existsById(id);
     }
-
 }
