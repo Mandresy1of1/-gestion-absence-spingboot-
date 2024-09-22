@@ -14,6 +14,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
     private final String user = "postgres";
     private final String password = "mann";
 
+    // Méthode pour obtenir une connexion à la base de données
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
@@ -21,129 +22,184 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
     @Override
     public List<Absence> findAll() {
         List<Absence> absences = new ArrayList<>();
-        String sql = "SELECT * FROM Absences";
+        String sql = "SELECT id, etudiant_id, date_absence, motif, justifiee, cours_id FROM absences";
+
         try (Connection connection = getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement pstmt = connection.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
             while (rs.next()) {
-                Absence absence = mapRowToAbsence(rs);
+                Long id = rs.getLong("id");
+                String etudiantId = rs.getString("etudiant_id");
+                Date dateAbsence = rs.getDate("date_absence");
+                String motif = rs.getString("motif");
+                boolean justifiee = rs.getBoolean("justifiee");
+                Long coursId = rs.getLong("cours_id");
+
+                // Vérification de la dateAbsence pour éviter NullPointerException
+                LocalDate localDateAbsence = (dateAbsence != null) ? dateAbsence.toLocalDate() : null;
+
+                Absence absence = new Absence(id, etudiantId, localDateAbsence, motif, justifiee, coursId);
                 absences.add(absence);
             }
         } catch (SQLException e) {
-            // Ajout d'un log pour suivre les erreurs
-            System.err.println("Erreur lors de la récupération des absences : " + e.getMessage());
+            e.printStackTrace();
         }
         return absences;
     }
 
     @Override
-    public void insert(Absence absence) {
-        String sql = "INSERT INTO Absences (etudiant_id, date_absence, motif, justifiee, cours_id) VALUES (?, ?, ?, ?, ?)";
+    public boolean existsById(Long id) {
+        String sql = "SELECT COUNT(*) FROM absences WHERE id = ?";
+
         try (Connection connection = getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    @Override
+    public void insert(Absence absence) {
+        String sql = "INSERT INTO absences (etudiant_id, date_absence, motif, justifiee, cours_id) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection connection = getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, absence.getEtudiantId());
-            pstmt.setDate(2, absence.getDateAbsence() != null ? Date.valueOf(absence.getDateAbsence()) : null);
+            pstmt.setDate(2, Date.valueOf(absence.getDateAbsence()));
             pstmt.setString(3, absence.getMotif());
             pstmt.setBoolean(4, absence.isJustifiee());
             pstmt.setLong(5, absence.getCoursId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Erreur lors de l'insertion de l'absence : " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Override
     public void update(Absence absence) {
-        String sql = "UPDATE Absences SET etudiant_id = ?, date_absence = ?, motif = ?, justifiee = ?, cours_id = ? WHERE id = ?";
+        String sql = "UPDATE absences SET etudiant_id = ?, date_absence = ?, motif = ?, justifiee = ?, cours_id = ? WHERE id = ?";
+
         try (Connection connection = getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, absence.getEtudiantId());
-            pstmt.setDate(2, absence.getDateAbsence() != null ? Date.valueOf(absence.getDateAbsence()) : null);
+            pstmt.setDate(2, Date.valueOf(absence.getDateAbsence()));
             pstmt.setString(3, absence.getMotif());
             pstmt.setBoolean(4, absence.isJustifiee());
             pstmt.setLong(5, absence.getCoursId());
             pstmt.setLong(6, absence.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la mise à jour de l'absence : " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM Absences WHERE id = ?";
+        String sql = "DELETE FROM absences WHERE id = ?";
+
         try (Connection connection = getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setLong(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la suppression de l'absence : " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<Absence> findByEtudiantId(String etudiantId) {
+        List<Absence> absences = new ArrayList<>();
+        String sql = "SELECT * FROM absences WHERE etudiant_id = ?";
+
+        try (Connection connection = getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setString(1, etudiantId);
+            ResultSet resultSet = pstmt.executeQuery();
+            while (resultSet.next()) {
+                Absence absence = new Absence();
+                absence.setId(resultSet.getLong("id"));
+                absence.setEtudiantId(resultSet.getString("etudiant_id"));
+                absence.setDateAbsence(resultSet.getDate("date_absence") != null ? resultSet.getDate("date_absence").toLocalDate() : null);
+                absence.setMotif(resultSet.getString("motif"));
+                absence.setJustifiee(resultSet.getBoolean("justifiee"));
+                absence.setCoursId(resultSet.getLong("cours_id"));
+                absences.add(absence);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return absences;
     }
 
     @Override
     public List<Absence> findByCoursId(Long coursId) {
         List<Absence> absences = new ArrayList<>();
-        String sql = "SELECT * FROM Absences WHERE cours_id = ?";
+        String sql = "SELECT * FROM absences WHERE cours_id = ?";
+
         try (Connection connection = getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setLong(1, coursId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Absence absence = mapRowToAbsence(rs);
-                    absences.add(absence);
-                }
+            ResultSet resultSet = pstmt.executeQuery();
+            while (resultSet.next()) {
+                Absence absence = new Absence();
+                absence.setId(resultSet.getLong("id"));
+                absence.setEtudiantId(resultSet.getString("etudiant_id"));
+                absence.setDateAbsence(resultSet.getDate("date_absence") != null ? resultSet.getDate("date_absence").toLocalDate() : null);
+                absence.setMotif(resultSet.getString("motif"));
+                absence.setJustifiee(resultSet.getBoolean("justifiee"));
+                absence.setCoursId(resultSet.getLong("cours_id"));
+                absences.add(absence);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des absences par cours : " + e.getMessage());
+            e.printStackTrace();
         }
+
         return absences;
     }
 
     @Override
     public Absence findById(Long id) {
-        String sql = "SELECT * FROM Absences WHERE id = ?";
+        Absence absence = null;
+        String sql = "SELECT * FROM absences WHERE id = ?";
+
         try (Connection connection = getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setLong(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapRowToAbsence(rs);
-                }
+            ResultSet resultSet = pstmt.executeQuery();
+            if (resultSet.next()) {
+                absence = new Absence();
+                absence.setId(resultSet.getLong("id"));
+                absence.setEtudiantId(resultSet.getString("etudiant_id"));
+                absence.setDateAbsence(resultSet.getDate("date_absence") != null ? resultSet.getDate("date_absence").toLocalDate() : null);
+                absence.setMotif(resultSet.getString("motif"));
+                absence.setJustifiee(resultSet.getBoolean("justifiee"));
+                absence.setCoursId(resultSet.getLong("cours_id"));
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération de l'absence par ID : " + e.getMessage());
+            e.printStackTrace();
         }
-        return null; // Retourne null si non trouvé
+
+        return absence;
     }
 
     @Override
     public List<Absence> findAllByEtudiant(String etudiantId) {
-        List<Absence> absences = new ArrayList<>();
-        String sql = "SELECT * FROM Absences WHERE etudiant_id = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, etudiantId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Absence absence = mapRowToAbsence(rs);
-                    absences.add(absence);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des absences par étudiant : " + e.getMessage());
-        }
-        return absences;
-    }
-
-    private Absence mapRowToAbsence(ResultSet rs) throws SQLException {
-        return new Absence(
-                rs.getLong("id"),
-                rs.getString("etudiant_id"),
-                rs.getObject("date_absence", LocalDate.class), // Utilisation de getObject pour éviter les nulls
-                rs.getString("motif"),
-                rs.getBoolean("justifiee"),
-                rs.getLong("cours_id")
-        );
+        return findByEtudiantId(etudiantId); // Réutilisation de la méthode existante
     }
 }

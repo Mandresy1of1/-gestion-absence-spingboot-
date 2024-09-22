@@ -10,6 +10,9 @@ public class Absence {
     private boolean justifiee;
     private Long coursId; // Ajout de coursId
 
+
+    public Absence() {}
+
     public Absence(Long id, String etudiantId, LocalDate dateAbsence, String motif, boolean justifiee, Long coursId) {
         this.id = id;
         this.etudiantId = etudiantId;

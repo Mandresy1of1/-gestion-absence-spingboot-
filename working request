@@ -1,0 +1,13 @@
+ABSENCES
+http://localhost:8080/absences (get)
+
+http://localhost:8080/absences (post with body)
+http://localhost:8080/absences/{id} (put with body)
+http://localhost:8080/absences/{id} (delete)
+
+
+ABSENCES ETUDIANT
+http://localhost:8080/absences/etudiant/{etudiantId} (get)
+
+ABSENCES COURS
+http://localhost:8080/absences/cours/{coursId}

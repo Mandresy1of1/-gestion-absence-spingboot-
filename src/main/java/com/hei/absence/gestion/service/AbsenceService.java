@@ -11,7 +11,7 @@ import java.util.List;
 public class AbsenceService {
     private final AbsenceRepository absenceRepository;
 
-    @Autowired // Assurez-vous d'utiliser cette annotation
+    @Autowired
     public AbsenceService(AbsenceRepository absenceRepository) {
         this.absenceRepository = absenceRepository;
     }
@@ -25,11 +25,19 @@ public class AbsenceService {
     }
 
     public void updateAbsence(Absence absence) {
-        absenceRepository.update(absence);
+        if (absenceRepository.existsById(absence.getId())) {
+            absenceRepository.update(absence);
+        } else {
+            throw new IllegalArgumentException("Absence non trouvée pour l'ID : " + absence.getId());
+        }
     }
 
     public void deleteAbsence(Long id) {
-        absenceRepository.delete(id);
+        if (absenceRepository.existsById(id)) {
+            absenceRepository.delete(id);
+        } else {
+            throw new IllegalArgumentException("Absence non trouvée pour l'ID : " + id);
+        }
     }
 
     public List<Absence> getAbsencesByCoursId(Long coursId) {
@@ -44,7 +52,12 @@ public class AbsenceService {
         return absenceRepository.findAllByEtudiant(etudiantId);
     }
 
-    public List<Absence> getAbsencesByEtudiant(String etudiantId) {
-        return absenceRepository.findAllByEtudiant(etudiantId);
+    public List<Absence> getAbsencesByCours(Long coursId) {
+        return absenceRepository.findByCoursId(coursId);
     }
+
+    public boolean existsById(Long id) {
+        return absenceRepository.existsById(id);
+    }
+
 }

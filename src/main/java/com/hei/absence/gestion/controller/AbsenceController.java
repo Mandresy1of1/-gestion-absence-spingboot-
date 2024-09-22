@@ -35,13 +35,23 @@ public class AbsenceController {
     // Récupérer les absences d'un étudiant spécifique
     @GetMapping("/etudiant/{etudiantId}")
     public ResponseEntity<List<Absence>> getAbsencesByEtudiant(@PathVariable String etudiantId) {
-        List<Absence> absences = absenceService.getAbsencesByEtudiant(etudiantId);
+        List<Absence> absences = absenceService.getAbsencesByEtudiantId(etudiantId);
+        return new ResponseEntity<>(absences, HttpStatus.OK);
+    }
+
+    // Récupérer les absences d'un cours spécifique
+    @GetMapping("/cours/{coursId}")
+    public ResponseEntity<List<Absence>> getAbsencesByCours(@PathVariable Long coursId) {
+        List<Absence> absences = absenceService.getAbsencesByCours(coursId);
         return new ResponseEntity<>(absences, HttpStatus.OK);
     }
 
     // Mettre à jour une absence
     @PutMapping("/{id}")
     public ResponseEntity<String> updateAbsence(@PathVariable Long id, @RequestBody Absence absence) {
+        if (!absenceService.existsById(id)) {
+            return new ResponseEntity<>("Absence non trouvée", HttpStatus.NOT_FOUND);
+        }
         absence.setId(id); // Assurer que l'ID correspond au path variable
         absenceService.updateAbsence(absence);
         return new ResponseEntity<>("Absence mise à jour avec succès", HttpStatus.OK);
@@ -50,6 +60,9 @@ public class AbsenceController {
     // Supprimer une absence
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAbsence(@PathVariable Long id) {
+        if (!absenceService.existsById(id)) {
+            return new ResponseEntity<>("Absence non trouvée", HttpStatus.NOT_FOUND);
+        }
         absenceService.deleteAbsence(id);
         return new ResponseEntity<>("Absence supprimée avec succès", HttpStatus.NO_CONTENT);
     }
