@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  title: API de Gestion des CORs
+  description: API pour gérer les CORs.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Serveur local
+
+paths:
+  /cors:
+    get:
+      summary: Récupérer tous les CORs
+      tags:
+        - COR
+      responses:
+        '200':
+          description: Liste de tous les CORs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/COR'
+        '500':
+          description: Erreur interne du serveur
+
+components:
+  schemas:
+    COR:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: L'identifiant du COR
+        name:
+          type: string
+          description: Nom du COR
+        description:
+          type: string
+          description: Description du COR

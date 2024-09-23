@@ -1,0 +1,157 @@
+openapi: 3.0.0
+info:
+  title: API de Gestion des Absences
+  description: API pour gérer les absences des étudiants et cours.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Serveur local
+
+paths:
+  /absences:
+    get:
+      summary: Récupérer toutes les absences
+      tags:
+        - Absences
+      responses:
+        '200':
+          description: Liste de toutes les absences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Absence'
+
+    post:
+      summary: Créer une nouvelle absence
+      tags:
+        - Absences
+      requestBody:
+        description: Détails de l'absence à créer
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Absence'
+      responses:
+        '201':
+          description: Absence créée avec succès
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Mauvaise requête
+
+  /absences/{id}:
+    put:
+      summary: Mettre à jour une absence
+      tags:
+        - Absences
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Détails de l'absence à mettre à jour
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Absence'
+      responses:
+        '200':
+          description: Absence mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Absence non trouvée
+
+    delete:
+      summary: Supprimer une absence
+      tags:
+        - Absences
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Absence supprimée avec succès
+        '404':
+          description: Absence non trouvée
+
+  /absences/etudiant/{etudiantId}:
+    get:
+      summary: Récupérer les absences d'un étudiant spécifique
+      tags:
+        - Absences Étudiant
+      parameters:
+        - name: etudiantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Absences de l'étudiant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Absence'
+        '404':
+          description: Étudiant non trouvé
+
+  /absences/cours/{coursId}:
+    get:
+      summary: Récupérer les absences d'un cours spécifique
+      tags:
+        - Absences Cours
+      parameters:
+        - name: coursId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Absences du cours
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Absence'
+        '404':
+          description: Cours non trouvé
+
+components:
+  schemas:
+    Absence:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: L'identifiant de l'absence
+        etudiantId:
+          type: string
+          description: L'identifiant de l'étudiant associé à l'absence
+        coursId:
+          type: integer
+          description: L'identifiant du cours associé à l'absence
+        date:
+          type: string
+          format: date
+          description: La date de l'absence
+        justification:
+          type: string
+          description: La justification de l'absence

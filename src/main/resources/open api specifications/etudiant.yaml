@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: API de Gestion des Étudiants
+  description: API pour gérer les étudiants dans le système de gestion des absences.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Serveur local
+
+paths:
+  /etudiants:
+    get:
+      summary: Récupérer tous les étudiants
+      tags:
+        - Étudiants
+      responses:
+        '200':
+          description: Liste de tous les étudiants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Etudiant'
+        '500':
+          description: Erreur interne du serveur
+    post:
+      summary: Créer un nouvel étudiant
+      tags:
+        - Étudiants
+      requestBody:
+        description: Détails de l'étudiant à créer
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Etudiant'
+      responses:
+        '201':
+          description: Étudiant créé avec succès
+        '500':
+          description: Erreur interne du serveur
+
+  /etudiants/{id}:
+    get:
+      summary: Récupérer un étudiant par son ID
+      tags:
+        - Étudiants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'étudiant à récupérer
+      responses:
+        '200':
+          description: Détails de l'étudiant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Etudiant'
+        '404':
+          description: Étudiant non trouvé
+        '500':
+          description: Erreur interne du serveur
+    put:
+      summary: Mettre à jour les informations d'un étudiant
+      tags:
+        - Étudiants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'étudiant à mettre à jour
+      requestBody:
+        description: Nouveaux détails de l'étudiant
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Etudiant'
+      responses:
+        '200':
+          description: Étudiant mis à jour avec succès
+        '404':
+          description: Étudiant non trouvé
+        '500':
+          description: Erreur interne du serveur
+    delete:
+      summary: Supprimer un étudiant
+      tags:
+        - Étudiants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'étudiant à supprimer
+      responses:
+        '204':
+          description: Étudiant supprimé avec succès
+        '404':
+          description: Étudiant non trouvé
+        '500':
+          description: Erreur interne du serveur
+
+components:
+  schemas:
+    Etudiant:
+      type: object
+      properties:
+        id:
+          type: string
+          description: L'ID unique de l'étudiant
+        nom:
+          type: string
+          description: Le nom de l'étudiant
+        prenom:
+          type: string
+          description: Le prénom de l'étudiant
+        email:
+          type: string
+          description: Adresse email de l'étudiant
