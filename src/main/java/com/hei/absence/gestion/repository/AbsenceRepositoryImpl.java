@@ -1,6 +1,7 @@
 package com.hei.absence.gestion.repository;
 
 import com.hei.absence.gestion.model.Absence;
+import com.hei.absence.gestion.DatabaseConnection; // Importation de la classe DatabaseConnection
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,21 +11,13 @@ import java.util.List;
 
 @Repository
 public class AbsenceRepositoryImpl implements AbsenceRepository {
-    private final String url = "jdbc:postgresql://localhost:5432/hei_absence_db";
-    private final String user = "postgres";
-    private final String password = "mann";
-
-    // Méthode pour obtenir une connexion à la base de données
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
-    }
 
     @Override
     public List<Absence> findAll() {
         List<Absence> absences = new ArrayList<>();
         String sql = "SELECT id, etudiant_id, date_absence, motif, justifiee, cours_id FROM absences";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -36,7 +29,6 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
                 boolean justifiee = rs.getBoolean("justifiee");
                 Long coursId = rs.getLong("cours_id");
 
-                // Vérification de la dateAbsence pour éviter NullPointerException
                 LocalDate localDateAbsence = (dateAbsence != null) ? dateAbsence.toLocalDate() : null;
 
                 Absence absence = new Absence(id, etudiantId, localDateAbsence, motif, justifiee, coursId);
@@ -52,7 +44,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
     public boolean existsById(Long id) {
         String sql = "SELECT COUNT(*) FROM absences WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setLong(1, id);
@@ -71,7 +63,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
     public void insert(Absence absence) {
         String sql = "INSERT INTO absences (etudiant_id, date_absence, motif, justifiee, cours_id) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, absence.getEtudiantId());
@@ -89,7 +81,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
     public void update(Absence absence) {
         String sql = "UPDATE absences SET etudiant_id = ?, date_absence = ?, motif = ?, justifiee = ?, cours_id = ? WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, absence.getEtudiantId());
@@ -108,7 +100,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
     public void delete(Long id) {
         String sql = "DELETE FROM absences WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setLong(1, id);
@@ -123,7 +115,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
         List<Absence> absences = new ArrayList<>();
         String sql = "SELECT * FROM absences WHERE etudiant_id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, etudiantId);
@@ -150,7 +142,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
         List<Absence> absences = new ArrayList<>();
         String sql = "SELECT * FROM absences WHERE cours_id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setLong(1, coursId);
@@ -177,7 +169,7 @@ public class AbsenceRepositoryImpl implements AbsenceRepository {
         Absence absence = null;
         String sql = "SELECT * FROM absences WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection(); // Utilisation de DatabaseConnection
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setLong(1, id);

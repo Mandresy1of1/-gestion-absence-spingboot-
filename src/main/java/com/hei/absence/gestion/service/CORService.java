@@ -34,7 +34,7 @@ public class CORService {
                 COR cor = new COR();
                 cor.setEtudiantId(etudiantId);
                 cor.setDateConvocation(LocalDate.now());
-                cor.setStatut("En attente"); // ou tout autre statut initial
+                cor.setStatut("Engaged"); 
 
                 corRepository.insert(cor); // Persister la COR en base de données
             }

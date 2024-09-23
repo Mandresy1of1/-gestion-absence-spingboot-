@@ -1,5 +1,6 @@
 package com.hei.absence.gestion.repository;
 
+import com.hei.absence.gestion.DatabaseConnection;
 import com.hei.absence.gestion.model.COR;
 import org.springframework.stereotype.Repository;
 
@@ -9,20 +10,11 @@ import java.util.List;
 
 @Repository
 public class CORRepositoryImpl implements CORRepository {
-    private final String url = "jdbc:postgresql://localhost:5432/hei_absence_db";
-    private final String user = "postgres";
-    private final String password = "mann";
-
-    // Méthode pour obtenir une connexion à la base de données
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
-    }
 
     @Override
     public void insert(COR cor) {
         String sql = "INSERT INTO cor (etudiant_id, date_convocation, statut) VALUES (?, ?, ?)";
-
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, cor.getEtudiantId());
@@ -31,7 +23,7 @@ public class CORRepositoryImpl implements CORRepository {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            // Vous pouvez lancer une exception personnalisée ou gérer l'erreur différemment
+            // Handle error appropriately
         }
     }
 
@@ -40,7 +32,7 @@ public class CORRepositoryImpl implements CORRepository {
         List<COR> cors = new ArrayList<>();
         String sql = "SELECT id, etudiant_id, date_convocation, statut FROM cor";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -54,7 +46,7 @@ public class CORRepositoryImpl implements CORRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Vous pouvez lancer une exception personnalisée ou gérer l'erreur différemment
+            // Handle error appropriately
         }
         return cors;
     }
@@ -64,7 +56,7 @@ public class CORRepositoryImpl implements CORRepository {
         COR cor = null;
         String sql = "SELECT id, etudiant_id, date_convocation, statut FROM cor WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setLong(1, id);
@@ -79,7 +71,7 @@ public class CORRepositoryImpl implements CORRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Vous pouvez lancer une exception personnalisée ou gérer l'erreur différemment
+            // Handle error appropriately
         }
         return cor;
     }
@@ -88,7 +80,7 @@ public class CORRepositoryImpl implements CORRepository {
     public void update(COR cor) {
         String sql = "UPDATE cor SET etudiant_id = ?, date_convocation = ?, statut = ? WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, cor.getEtudiantId());
@@ -98,7 +90,7 @@ public class CORRepositoryImpl implements CORRepository {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            // Vous pouvez lancer une exception personnalisée ou gérer l'erreur différemment
+            // Handle error appropriately
         }
     }
 
@@ -106,14 +98,14 @@ public class CORRepositoryImpl implements CORRepository {
     public void delete(Long id) {
         String sql = "DELETE FROM cor WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setLong(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            // Vous pouvez lancer une exception personnalisée ou gérer l'erreur différemment
+            // Handle error appropriately
         }
     }
 }

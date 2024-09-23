@@ -11,3 +11,13 @@ http://localhost:8080/absences/etudiant/{etudiantId} (get)
 
 ABSENCES COURS
 http://localhost:8080/absences/cours/{coursId}
+
+COR
+http://localhost:8080/cors (get)
+
+ETUDIANT
+http://localhost:8080/etudiants (get)
+http://localhost:8080/etudiants/{etudiantId} (get)
+http://localhost:8080/etudiants (post with body)
+http://localhost:8080/etudiants (put with body)
+http://localhost:8080/etudiants/{etudiantId} (delete)

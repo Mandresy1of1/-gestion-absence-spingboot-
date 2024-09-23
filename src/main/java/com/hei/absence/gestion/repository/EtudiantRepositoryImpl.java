@@ -1,5 +1,6 @@
 package com.hei.absence.gestion.repository;
 
+import com.hei.absence.gestion.DatabaseConnection;
 import com.hei.absence.gestion.model.Etudiant;
 import org.springframework.stereotype.Repository;
 
@@ -9,17 +10,14 @@ import java.util.List;
 
 @Repository
 public class EtudiantRepositoryImpl implements EtudiantRepository {
-    private final String url = "jdbc:postgresql://localhost:5432/hei_absence_db";
-    private final String user = "postgres";
-    private final String password = "mann";
 
     @Override
     public List<Etudiant> findAll() {
         List<Etudiant> etudiants = new ArrayList<>();
         String sql = "SELECT * FROM etudiants";
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement();
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -32,6 +30,7 @@ public class EtudiantRepositoryImpl implements EtudiantRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            // Handle error appropriately
         }
         return etudiants;
     }
@@ -39,8 +38,8 @@ public class EtudiantRepositoryImpl implements EtudiantRepository {
     @Override
     public void save(Etudiant etudiant) {
         String sql = "INSERT INTO etudiants (id, nom, prenom, email) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, etudiant.getId());
             pstmt.setString(2, etudiant.getNom());
@@ -49,6 +48,7 @@ public class EtudiantRepositoryImpl implements EtudiantRepository {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            // Handle error appropriately
         }
     }
 
@@ -57,8 +57,8 @@ public class EtudiantRepositoryImpl implements EtudiantRepository {
         Etudiant etudiant = null;
         String sql = "SELECT * FROM etudiants WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -72,6 +72,7 @@ public class EtudiantRepositoryImpl implements EtudiantRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            // Handle error appropriately
         }
         return etudiant;
     }
@@ -79,8 +80,9 @@ public class EtudiantRepositoryImpl implements EtudiantRepository {
     @Override
     public void update(Etudiant etudiant) {
         String sql = "UPDATE etudiants SET nom = ?, prenom = ?, email = ? WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, etudiant.getNom());
             pstmt.setString(2, etudiant.getPrenom());
@@ -89,19 +91,22 @@ public class EtudiantRepositoryImpl implements EtudiantRepository {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            // Handle error appropriately
         }
     }
 
     @Override
     public void delete(String id) {
         String sql = "DELETE FROM etudiants WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            // Handle error appropriately
         }
     }
 }
